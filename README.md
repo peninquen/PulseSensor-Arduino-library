@@ -26,6 +26,9 @@ Read() the pulse rate (float) or the acumulated pulses (unsigned long).
 I test it with a water flow sensor YF-402, arduino UNO and Arduino MEGA 2560 and works (precision not tested)  
 
 TODO: use pin change interrupt to allow every pin.
+
 TODO: integrate with pool controler to detect water flows through pH and ORP sensors
+
 TODO: integrate with photodiode to detect water leakage (reading water counter)
+
 TODO: integrate with ArduinoDomoticExcontrol
