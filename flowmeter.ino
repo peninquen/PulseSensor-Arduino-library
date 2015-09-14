@@ -27,7 +27,6 @@ Mechanical:
 1/2" NPS nominal pipe connections, 0.78" outer diameter, 1/2" of thread
 Size: 2.5" x 1.4" x 1.4"
 */
-//#include "Arduino.h"
 
 #include "PulseSensor.h"
 
