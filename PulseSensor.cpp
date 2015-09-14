@@ -2,9 +2,9 @@
 /* PulseSensor library
 /* a class to control a pulse sensor connected to one of the pins
 /* attached to one of the external interrupt.
-/* version 0.1 ALPHA 29/08/2015 ¡NOT TESTED!
+/* version 0.2 BETA 14/09/2015 
 /* Author: Jaime García  @peninquen
-/* Licence: Released for public use.
+/* Licence: Apache License Version 2.0.
 /*
 /**********************************************************************/
 
@@ -28,7 +28,6 @@ PulseSensor::PulseSensor() {
 /*Setup variables and initialize interrupts*/
 
 void PulseSensor::begin(int pulsePin, unsigned int interval, float rateConversion, float acumConversion) {
-  int pulseInterrupt;
   _interval = interval;
   _rateConversion = rateConversion;
   _acumConversion = acumConversion;
@@ -37,25 +36,10 @@ void PulseSensor::begin(int pulsePin, unsigned int interval, float rateConversio
   _acumCounter = 0;
   _counter = 0;                  // reset instance counter
   _COUNTER = 0;                  // reset global counter
-  switch (pulsePin) {
-    case 2: pulseInterrupt = 0;
-      break;
-    case 3: pulseInterrupt = 1;
-      break;
-    case 21: pulseInterrupt = 2;
-      break;
-    case 20: pulseInterrupt = 3;
-      break;
-    case 19: pulseInterrupt = 4;
-      break;
-    case 18: pulseInterrupt = 5;
-      break;
-    default: return;
-  }
   Serial.print("Pulse Pin:"); Serial.print(pulsePin);
-  Serial.print("  INT"); Serial.println(pulseInterrupt);
+  Serial.print("  INT"); Serial.println(digitalPinToInterrupt(pulsePin));
   pinMode(pulsePin, INPUT); // conect external pull up resistor 10 Kohm on input pin
-  attachInterrupt(pulseInterrupt, detectPulseISR, RISING);
+  attachInterrupt(digitalPinToInterrupt(pulsePin), detectPulseISR, RISING);
 }
 
 /***************************************************************************/
