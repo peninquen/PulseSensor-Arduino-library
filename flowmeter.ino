@@ -1,10 +1,9 @@
 /**********************************************************************/
-/* PulseSensor library
-/* a class to control a pulse sensor connected to one of the pins
-/* attached to one of the external interrupt.
-/* version 0.2 BETA 06/09/2015
+/* PulseCounter example
+/* An example to collect data from a flowmeter using PulseSensor class
+/* version 0.2 BETA 14/09/2015
 /* Author: Jaime García  @peninquen
-/* Licence: Released for public use.
+/* Licence: Apache License Version 2.0.
 /*
 /**********************************************************************/
 /*
@@ -33,11 +32,12 @@ Size: 2.5" x 1.4" x 1.4"
 #include "PulseSensor.h"
 
 
-#define REFRESH_INTERVAL  1000      // refresh time, 1/2 second
-#define WRITE_INTERVAL 5000  // values send to serial port, 3 seconds (3 * 1000)
-#define PULSE_PIN 18 // D3 on ARDUINO UNO & MEGA, D2 LEONARDO  // conect external pull up resistor 10 Kohm on input pin
-#define PULSES_SEC_2_LITERS_MINUTE 7.5 // from pulses/second to liters/minute
-#define PULSES_2_LITERS 450 // from pulses to liters
+#define REFRESH_INTERVAL  1000      // refresh time, 1 second
+#define WRITE_INTERVAL 5000  // values send to serial port, 5 seconds (5 * 1000)
+#define PULSE_PIN 18 // see external interrupt pins available on your Arduino.
+                     // Conect an external 10 Kohm pull up resistor  on input pin is recomended
+#define PULSES_SEC_2_LITERS_MINUTE 7.5 // conversion factor from pulses/second to liters/minute
+#define PULSES_2_LITERS 450 // conversion factor from pulses to liters
 PulseSensor flowmeter; // instance to collect data
 //variables to process and send values
 float flowRate;
@@ -83,8 +83,7 @@ void loop() {
   if (currentMillis - previousMillis >= WRITE_INTERVAL) {
     previousMillis = currentMillis;
     acumFlow = flowmeter.readAcum();
-
-    flowRate = (acumFlow - lastAcumFlow) * 60 * 1000 / WRITE_INTERVAL;
+    flowRate = (acumFlow - lastAcumFlow) * 60 * 1000 / WRITE_INTERVAL; //average flowrate
     lastAcumFlow = acumFlow;
     firstData = true;
 
