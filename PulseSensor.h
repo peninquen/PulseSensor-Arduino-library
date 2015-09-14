@@ -4,9 +4,9 @@
 /* and o water counters, electric counters using photodiode
 /* the pulse sensor signal must be conected to one of the pins
 /* attached to one of the external interrupt.
-/* version 0.1 ALPHA 29/08/2015 ¡NOT TESTED!
+/* version 0.2 BETA 14/09/2015 
 /* Author: Jaime García  @peninquen
-/* Licence: Released for public use.
+/* License:  Apache License Version 2.0.
 /*
 /**********************************************************************/
 
