@@ -44,7 +44,7 @@ void PulseSensor::begin(int pulsePin, unsigned int interval, float rateConversio
 
 /***************************************************************************/
 /*check interval and update data, interval must be greater than loop cycle*/
-void PulseSensor::refreshData() {
+boolean PulseSensor::refreshData() {
   unsigned long nowTime = millis();
   if (nowTime - _processTime >= _interval) {
     byte oldSREG = SREG;
@@ -55,7 +55,9 @@ void PulseSensor::refreshData() {
     _processTime = nowTime;     //stamp process time
     _flag = true;
     SREG = oldSREG;            //enable last state interrupts register
+    return true;
   }
+  else return false;
 }
 
 /***************************************************************************/
