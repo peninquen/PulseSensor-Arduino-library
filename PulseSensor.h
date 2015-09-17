@@ -33,7 +33,7 @@ class PulseSensor {
     void begin(int pulsePin, unsigned int interval, float rateConversion, float acumConversion);
 
     // check interval and update data, interval must be greater than loop cycle
-    void refreshData();
+    boolean refreshData();
 
     // read _counter value in defined units
     float read();
@@ -54,7 +54,7 @@ class PulseSensor {
     boolean available();
 
   private:
-    bool _flag;                        // true when data is processed, false when data is readed
+    boolean _flag;                     // true when data is processed, false when data is readed
     unsigned long _acumCounter;        // Acumulated pulse counter
     unsigned long _processTime;        // last time process
     unsigned int _counter;             // last number of pulses registered
