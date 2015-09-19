@@ -1,15 +1,15 @@
 /**********************************************************************/
-/* EnergyMonitor example
+/* PulseEnergyMonitor example
 /* An example to collect data from a pulse wattmeter using PulseSensor class
-/* version 0.1 ALPHA 17/09/2015
+/* version 0.1 ALPHA 19/09/2015
 /* Author: Jaime García  @peninquen
 /* Licence: Apache License Version 2.0.
 /*
 /**********************************************************************/
 /*
-PULSE ELECTRICAL ENERGY METER
+PULSE ELECTRICAL ENERGY MONITOR
+DDS238-1 SINGLE-PHASE DIN-RAIL TYPE WATT-HOUR METER
 TECHNICAL DETAILS
-
 STANDARD IEC 62053-21 (IEC61036)
 Nominal voltage: 120/220/230/240 V +-10%
 Basic current (It): 5 A
@@ -23,9 +23,81 @@ Display: Mechanical 5+1 digits
 Interface: Open colector output (SO)  SO+ ---------------------- PIN 2 INT0 INTERNAL PULLUP RESISTOR
            18-27V 27mA                SO- ---------------------- GND
 Impulse length: >= 30ms                       
-Conversion factor:  3200 imp/KWh-> 0,3125 Wh/imp (230V)-> 1 imp/s = 4,8913 A
+Conversion factor:  3200 imp/KWh-> 0,3125 Wh/imp 1 imps/s = 1,125 W (230V)-> 1 imp/s = 4,8913 A =
 maximum impulse frequency: 6.13 imp/s -> period 163 ms 
 minimun impulse frequency: 1.0 imp/min-> period 60000 ms
 Mounting: DIN rail 18 mm (1 module)
 include flasing led proportional to load (1000 imp/KWh)
 */
+
+
+#include "PulseSensor.h"
+
+
+#define REFRESH_INTERVAL  60000      // refresh time, 1 MINUTE
+#define WRITE_INTERVAL 300000UL  // values send to serial port, 15 minutes (5 * 60 * 1000)
+#define PULSE_PIN 18 // see external interrupt pins available on your Arduino.
+                     // Conect an external 10 Kohm pull up resistor  on input pin is recomended
+#define PULSES_SEC_2_WATT 1.125 // conversion factor from pulses/second to watts
+#define PULSES_2_KWH 3200 // conversion factor from pulses to KWh
+PulseSensor wattmeter; // instance to collect data
+//variables to process and send values
+float power;
+float maxPower;
+float minPower;
+float energy;
+float lastEnergy;
+boolean firstData;
+
+unsigned long previousMillis = 0;
+unsigned long currentMillis = 0;
+
+
+void setup() {
+  Serial.begin(9600);
+  delay(1000);
+  wattmeter.begin(PULSE_PIN, REFRESH_INTERVAL, PULSES_SEC_2_WATT, PULSES_2_KWH);
+  Serial.println("time(s), average power(watt), max power, min power, energy(KWh)");
+
+  firstData = false;
+  power = 0;
+  maxPower = 0;
+  minPower = 0;
+  energy = 0;
+}
+
+void loop() {
+  sei();
+  if (wattmeter.available()) {
+    power = wattmeter.read();
+    if (!firstData) {
+      if (maxPower < power) maxPower = power;
+      if (minPower > power) minPower = power;
+    }
+    else {
+      maxPower = power;
+      minPower = power;
+      firstData = false;
+    }
+  }
+
+  currentMillis = millis();
+  if (currentMillis - previousMillis >= WRITE_INTERVAL) {
+    previousMillis = currentMillis;
+    energy = wattmeter.readAcum();
+    power = (energy - lastEnergy) * 60 * 1000 / WRITE_INTERVAL; //average power
+    lastEnergy = energy;
+    firstData = true;
+
+    Serial.print(currentMillis / 1000);
+    Serial.print(",");
+    Serial.print(power);
+    Serial.print(",");
+    Serial.print(maxPower);
+    Serial.print(",");
+    Serial.print(minPower);
+    Serial.print(",");
+    Serial.println(energy);
+
+  }
+}
