@@ -2,7 +2,7 @@
 /* PulseSensor library
 /* a class to control a pulse sensor connected to one of the pins
 /* attached to one of the external interrupt.
-/* version 0.2 BETA 14/09/2015 
+/* version 0.3 BETA 19/09/2015
 /* Author: Jaime García  @peninquen
 /* Licence: Apache License Version 2.0.
 /*
@@ -13,9 +13,14 @@
 
 
 volatile unsigned int _COUNTER;
+volatile unsigned long _startTime;
+volatile unsigned long _finishTime;
+
 
 void detectPulseISR() {
   _COUNTER++;
+  _startTime = micros();
+  _finishTime = _startTime;
 }
 
 /***************************************************************************/
@@ -44,7 +49,7 @@ void PulseSensor::begin(int pulsePin, unsigned int interval, float rateConversio
 
 /***************************************************************************/
 /*check interval and update data, interval must be greater than loop cycle*/
-boolean PulseSensor::refreshData() {
+void PulseSensor::refreshData() {
   unsigned long nowTime = millis();
   if (nowTime - _processTime >= _interval) {
     byte oldSREG = SREG;
@@ -55,9 +60,7 @@ boolean PulseSensor::refreshData() {
     _processTime = nowTime;     //stamp process time
     _flag = true;
     SREG = oldSREG;            //enable last state interrupts register
-    return true;
   }
-  else return false;
 }
 
 /***************************************************************************/
@@ -66,6 +69,20 @@ boolean PulseSensor::refreshData() {
 float PulseSensor::read() {
   _flag = false;
   return (float)(_counter * 1000.0 / _rateConversion / _interval);
+}
+
+/***************************************************************************/
+/*read instant value in defined units*/
+float PulseSensor::readInstant() {
+  unsigned long nowTime = micros();
+  unsigned long period;
+  byte oldSREG = SREG;
+  noInterrupts();
+  if (_finishTime - _startTime > nowTime - _finishTime)
+    period = _finishTime - _startTime;
+  else period = nowTime - _finishTime;
+  SREG = oldSREG;            //enable last state interrupts register
+  return (float)1000 / _rateConversion / period;
 }
 
 /***************************************************************************/
