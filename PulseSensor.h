@@ -4,7 +4,7 @@
 /* and o water counters, electric counters using photodiode
 /* the pulse sensor signal must be conected to one of the pins
 /* attached to one of the external interrupt.
-/* version 0.2 BETA 14/09/2015 
+/* version 0.3 BETA 19/09/2015 
 /* Author: Jaime García  @peninquen
 /* License:  Apache License Version 2.0.
 /*
@@ -33,10 +33,13 @@ class PulseSensor {
     void begin(int pulsePin, unsigned int interval, float rateConversion, float acumConversion);
 
     // check interval and update data, interval must be greater than loop cycle
-    boolean refreshData();
+    void refreshData();
 
     // read _counter value in defined units
     float read();
+
+    // read instant value in defined units
+    float readInstant();
 
     // read _acumCounter value in defined units
     float readAcum();
@@ -54,7 +57,7 @@ class PulseSensor {
     boolean available();
 
   private:
-    boolean _flag;                     // true when data is processed, false when data is readed
+    bool _flag;                        // true when data is processed, false when data is readed
     unsigned long _acumCounter;        // Acumulated pulse counter
     unsigned long _processTime;        // last time process
     unsigned int _counter;             // last number of pulses registered
