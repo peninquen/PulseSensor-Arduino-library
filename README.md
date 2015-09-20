@@ -1,5 +1,5 @@
 # PulseSensor-Arduino-library
-Arduino library to control pulse sensor like hall effect flowmeters, and o water counters, electric counters using photodiode
+Arduino library to control pulse sensor like hall effect flowmeters, water and electric counters using photodiode or pulse output.
 Conect yor 0-5V signal to an external interrupt of the Arduino UNO or MEGA 2560
 
 PIN D2  -> INT 0  UNO/MEGA
@@ -14,14 +14,15 @@ PIN D19 RX1 -> INT 4  MEGA
 
 PIN D18 TX1 -> INT 5  MEGA
 
-if necesary, use a pullup 10K resistor.
 
 First, declare an instance of the PulseSensor class.
 
 Inside Setup(), initilize your instance. Use conversion factors from your technical datasheet.
 
-Inside loop(), refreshData() or ask if a new value is available.
-Read() the pulse rate (float) or the acumulated pulses (unsigned long). 
+Inside loop(), refreshData() or ask if a new value is available().
+use diferent read functions to acces pulse rate and acumulted pulses, also converted to your defined units.
+
+
 
 I test it with a water flow sensor YF-402, arduino UNO and Arduino MEGA 2560 and works (precision not tested)  
 
