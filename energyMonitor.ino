@@ -38,13 +38,12 @@ include flasing led proportional to load (1000 imp/KWh)
 #include "PulseSensor.h"
 
 
-#define REFRESH_INTERVAL  60000      // refresh time, 1 MINUTE
-#define WRITE_INTERVAL 300000UL  // values send to serial port, 15 minutes (5 * 60 * 1000)
-#define PULSE_PIN 18 // see external interrupt pins available on your Arduino.
-                     // Conect an external 10 Kohm pull up resistor  on input pin is recomended
-#define PULSES_SEC_2_WATT 8.88889e-4 //(1/1125) conversion factor from pulses/second to watts
-#define PULSES_2_KWH 3200 // conversion factor from pulses to KWh
-PulseSensor wattmeter; // instance to collect data
+#define REFRESH_INTERVAL  60000       // refresh time, 1 MINUTE
+#define WRITE_INTERVAL 300000UL       // values send to serial port, 15 minutes (5 * 60 * 1000)
+#define PULSE_PIN 2                   // see external interrupt pins available on your Arduino
+#define PULSES_2_KWH 3200             // conversion factor from pulses to KWh
+#define PULSES_SEC_2_WATT 8.88889e-4  //(3200/3600000) conversion factor from pulses/second to watts
+PulseSensor wattmeter;                // instance to collect data
 //variables to process and send values
 float power;
 float maxPower;
