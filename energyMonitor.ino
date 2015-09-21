@@ -1,9 +1,9 @@
 /**********************************************************************/
 /* PulseEnergyMonitor example
 /* An example to collect data from a pulse wattmeter using PulseSensor class
-/* version 0.1 ALPHA 19/09/2015
+/* version 0.2 ALPHA 21/09/2015
 /* Author: Jaime García  @peninquen
-/* Licence: Apache License Version 2.0.
+/* License: Apache License Version 2.0.
 /*
 /**********************************************************************/
 /*
@@ -89,7 +89,7 @@ void loop() {
   if (currentMillis - previousMillis >= WRITE_INTERVAL) {
     previousMillis = currentMillis;
     energy = wattmeter.readAcum();
-    power = (energy - lastEnergy) * 60 * 1000 / WRITE_INTERVAL; //average power
+    power = (energy - lastEnergy) * 3600 * 1000 * 1000 / WRITE_INTERVAL; //average power KWh/s to W
     lastEnergy = energy;
     firstData = true;
 
