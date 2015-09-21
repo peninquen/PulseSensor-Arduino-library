@@ -43,7 +43,7 @@ void PulseSensor::begin(int pulsePin, unsigned int interval, float rateConversio
   _COUNTER = 0;                  // reset global counter
   Serial.print("Pulse Pin:"); Serial.print(pulsePin);
   Serial.print("  INT"); Serial.println(digitalPinToInterrupt(pulsePin));
-  pinMode(pulsePin, INPUT); // conect external pull up resistor 10 Kohm on input pin
+  pinMode(pulsePin, INPUT_PULLUP); // 
   attachInterrupt(digitalPinToInterrupt(pulsePin), detectPulseISR, RISING);
 }
 
