@@ -1,12 +1,27 @@
-/**********************************************************************/
-/* PulseSensor library
-/* a class to control a pulse sensor connected to one of the pins
-/* attached to one of the external interrupt.
-/* version 0.3 BETA 19/09/2015
-/* Author: Jaime García  @peninquen
-/* Licence: Apache License Version 2.0.
-/*
-/**********************************************************************/
+/*********************************************************************
+* PulseSensor library
+* a class to control a pulse sensor connected to one of the pins
+* attached to one of the external interrupt.
+* version 0.3 BETA 19/09/2015
+* Author: Jaime García  @peninquen
+* Licence: Apache License Version 2.0.
+*
+**********************************************************************/
+//------------------------------------------------------------------------------
+// Poner PH_DEBUG a 1 para depuración.
+
+#define PH_DEBUG  0
+
+//------------------------------------------------------------------------------
+// Debug directives
+
+#if PH_DEBUG
+#   define DEBUG_PRINT(...)    Serial.print(__VA_ARGS__)
+#   define DEBUG_PRINTLN(...)  Serial.println(__VA_ARGS__)
+#else
+#   define DEBUG_PRINT(...)
+#   define DEBUG_PRINTLN(...)
+#endif
 
 
 #include "PulseSensor.h"
@@ -41,14 +56,14 @@ void PulseSensor::begin(int pulsePin, unsigned int interval, float rateConversio
   _acumCounter = 0;
   _counter = 0;                  // reset instance counter
   _COUNTER = 0;                  // reset global counter
-  Serial.print("Pulse Pin:"); Serial.print(pulsePin);
-  Serial.print("  INT"); Serial.println(digitalPinToInterrupt(pulsePin));
+  DEBUG_PRINT(F("Pulse Pin:")); DEBUG_PRINT(pulsePin);
+  DEBUG_PRINT(F("  INT")); DEBUG_PRINTLN(digitalPinToInterrupt(pulsePin));
   pinMode(pulsePin, INPUT_PULLUP); // 
   attachInterrupt(digitalPinToInterrupt(pulsePin), detectPulseISR, RISING);
 }
 
 /***************************************************************************/
-/*check interval and update data, interval must be greater than loop cycle*/
+/*check interval and update data, include at least one time inside loop cycle*/
 void PulseSensor::refreshData() {
   unsigned long nowTime = millis();
   if (nowTime - _processTime >= _interval) {
