@@ -8,19 +8,19 @@
 *
 **********************************************************************/
 //------------------------------------------------------------------------------
-// Poner PH_DEBUG a 1 para depuración.
+// Poner PULSE_DEBUG a 1 para depuración.
 
 #define PH_DEBUG  0
 
 //------------------------------------------------------------------------------
 // Debug directives
 
-#if PH_DEBUG
-#   define DEBUG_PRINT(...)    Serial.print(__VA_ARGS__)
-#   define DEBUG_PRINTLN(...)  Serial.println(__VA_ARGS__)
+#if PULSE_DEBUG
+#   define PULSE_DEBUG_PRINT(...)    Serial.print(__VA_ARGS__)
+#   define PULSE_DEBUG_PRINTLN(...)  Serial.println(__VA_ARGS__)
 #else
-#   define DEBUG_PRINT(...)
-#   define DEBUG_PRINTLN(...)
+#   define PULSE_DEBUG_PRINT(...)
+#   define PULSE_DEBUG_PRINTLN(...)
 #endif
 
 
@@ -34,8 +34,9 @@ volatile unsigned long _finishTime;
 
 void detectPulseISR() {
   _COUNTER++;
-  _startTime = micros();
-  _finishTime = _startTime;
+  _startTime = _finishTime;
+  _finishTime = micros();
+  
 }
 
 /***************************************************************************/
@@ -56,8 +57,11 @@ void PulseSensor::begin(int pulsePin, unsigned int interval, float rateConversio
   _acumCounter = 0;
   _counter = 0;                  // reset instance counter
   _COUNTER = 0;                  // reset global counter
-  DEBUG_PRINT(F("Pulse Pin:")); DEBUG_PRINT(pulsePin);
-  DEBUG_PRINT(F("  INT")); DEBUG_PRINTLN(digitalPinToInterrupt(pulsePin));
+  _startTime = 0;
+  _finishTime = micros();
+  
+  PULSE_DEBUG_PRINT(F("Pulse Pin:")); PULSE_DEBUG_PRINT(pulsePin);
+  PULSE_DEBUG_PRINT(F("  INT")); PULSE_DEBUG_PRINTLN(digitalPinToInterrupt(pulsePin));
   pinMode(pulsePin, INPUT_PULLUP); // 
   attachInterrupt(digitalPinToInterrupt(pulsePin), detectPulseISR, RISING);
 }
@@ -87,15 +91,13 @@ float PulseSensor::read() {
 }
 
 /***************************************************************************/
-/*read instant value in defined units*/
+/*read instant value in defined unitsM; overflow errors after long inactivity time */
 float PulseSensor::readInstant() {
-  unsigned long nowTime = micros();
   unsigned long period;
   byte oldSREG = SREG;
   noInterrupts();
-  if (_finishTime - _startTime > nowTime - _finishTime)
-    period = _finishTime - _startTime;
-  else period = nowTime - _finishTime;
+  period = micros() - _finishTime;
+  if (period < _finishTime - _startTime) period = _finishTime - _startTime;
   SREG = oldSREG;            //enable last state interrupts register
   return (float)1000 / _rateConversion / period;
 }
