@@ -2,25 +2,25 @@
 * PulseSensor library
 * a class to control a pulse sensor connected to one of the pins
 * attached to one of the external interrupt.
-* version 0.3 BETA 19/09/2015
+* version 0.3 BETA 22/09/2015
 * Author: Jaime García  @peninquen
 * Licence: Apache License Version 2.0.
 *
 **********************************************************************/
 //------------------------------------------------------------------------------
-// Poner PULSE_DEBUG a 1 para depuración.
+// Poner DEBUG a 1 para depuración.
 
-#define PULSE_DEBUG  0
+#define DEBUG  0
 
 //------------------------------------------------------------------------------
 // Debug directives
 
-#if PULSE_DEBUG
-#   define PULSE_DEBUG_PRINT(...)    Serial.print(__VA_ARGS__)
-#   define PULSE_DEBUG_PRINTLN(...)  Serial.println(__VA_ARGS__)
+#if DEBUG
+#   define DEBUG_PRINT(...)    Serial.print(__VA_ARGS__)
+#   define DEBUG_PRINTLN(...)  Serial.println(__VA_ARGS__)
 #else
-#   define PULSE_DEBUG_PRINT(...)
-#   define PULSE_DEBUG_PRINTLN(...)
+#   define DEBUG_PRINT(...)
+#   define DEBUG_PRINTLN(...)
 #endif
 
 
@@ -36,7 +36,7 @@ void detectPulseISR() {
   _COUNTER++;
   _startTime = _finishTime;
   _finishTime = micros();
-  
+
 }
 
 /***************************************************************************/
@@ -59,10 +59,11 @@ void PulseSensor::begin(int pulsePin, unsigned int interval, float rateConversio
   _COUNTER = 0;                  // reset global counter
   _startTime = 0;
   _finishTime = micros();
-  
-  PULSE_DEBUG_PRINT(F("Pulse Pin:")); PULSE_DEBUG_PRINT(pulsePin);
-  PULSE_DEBUG_PRINT(F("  INT")); PULSE_DEBUG_PRINTLN(digitalPinToInterrupt(pulsePin));
-  pinMode(pulsePin, INPUT_PULLUP); // 
+
+  DEBUG_PRINT(F("Pulse Pin:")); DEBUG_PRINT(pulsePin);
+  DEBUG_PRINT(F("  INT")); DEBUG_PRINTLN(digitalPinToInterrupt(pulsePin));
+
+  pinMode(pulsePin, INPUT_PULLUP); //
   attachInterrupt(digitalPinToInterrupt(pulsePin), detectPulseISR, RISING);
 }
 
@@ -94,12 +95,11 @@ float PulseSensor::read() {
 /*read instant value in defined units */
 float PulseSensor::readInstant() {
   unsigned long period;
-  if ((_counter==0)&&(_COUNTER<2)) return 0.0; //we need 2 consecutive pulses to process 
+  if ((_counter == 0) && (_COUNTER < 2)) return 0.0; //we need 2 consecutive pulses to process
   byte oldSREG = SREG;
   noInterrupts();
   period = micros() - _finishTime;
   if (period < _finishTime - _startTime) period = _finishTime - _startTime;
-  }
   SREG = oldSREG;            //enable last state interrupts register
   return (float)1000 / _rateConversion / period;
 }
