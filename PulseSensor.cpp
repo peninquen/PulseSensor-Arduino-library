@@ -98,6 +98,10 @@ float PulseSensor::readInstant() {
   noInterrupts();
   period = micros() - _finishTime;
   if (period < _finishTime - _startTime) period = _finishTime - _startTime;
+  if (period> 0xF8000000){  //  > 61 minutes
+    _finishtime += 0xF0000000); //increase
+    _startTime += 0xC0000000);
+  }
   SREG = oldSREG;            //enable last state interrupts register
   return (float)1000 / _rateConversion / period;
 }
