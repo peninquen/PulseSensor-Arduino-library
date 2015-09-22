@@ -91,16 +91,14 @@ float PulseSensor::read() {
 }
 
 /***************************************************************************/
-/*read instant value in defined unitsM; overflow errors after long inactivity time */
+/*read instant value in defined units */
 float PulseSensor::readInstant() {
   unsigned long period;
+  if ((_counter==0)&&(_COUNTER<2)) return 0.0; //we need 2 consecutive pulses to process 
   byte oldSREG = SREG;
   noInterrupts();
   period = micros() - _finishTime;
   if (period < _finishTime - _startTime) period = _finishTime - _startTime;
-  if (period> 0xF8000000){  //  > 61 minutes
-    _finishtime += 0xF0000000); //increase
-    _startTime += 0xC0000000);
   }
   SREG = oldSREG;            //enable last state interrupts register
   return (float)1000 / _rateConversion / period;
@@ -110,7 +108,7 @@ float PulseSensor::readInstant() {
 /*read acumulated value [units]*/
 
 float PulseSensor::readAcum() {
-  return (float)(_acumCounter / _acumConversion );
+  return (float)_acumCounter / _acumConversion;
 }
 
 /***************************************************************************/
