@@ -1,10 +1,10 @@
 /**********************************************************************/
 /* PulseSensor library
 /* Arduino library to control pulse sensor like hall effect flowmeters,
-/* and o water counters, electric counters using photodiode
+/* and water counters electric counters with led pulse using a photodiode, or isolated output
 /* the pulse sensor signal must be conected to one of the pins
 /* attached to one of the external interrupt.
-/* version 0.3 BETA 19/09/2015 
+/* version 0.3 BETA 22/09/2015 
 /* Author: Jaime García  @peninquen
 /* License:  Apache License Version 2.0.
 /*
